@@ -1,6 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Import Link
-import Login from "./buttons/Login";
 // import Login from "./buttons/Login";
 // import Register from "./buttons/Register";
 // import Cart from "./buttons/Cart";
@@ -28,7 +26,7 @@ export default function Navbar() {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">
+                <a className="nav-link active" aria-current="page" href="/">
                   Home
                 </a>
               </li>
@@ -54,7 +52,7 @@ export default function Navbar() {
               </a>
             </div>
             <div className="buttons">
-              <a href="" className="btn btn-outline-dark ms-2">
+              <a href="/Register" className="btn btn-outline-dark ms-2">
                 <i className="fa fa-user-plus me-1"></i> Register
               </a>
             </div>

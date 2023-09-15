@@ -1,92 +1,105 @@
 import React from "react";
+import Footer from "../Footer";
 
 const Login = () => {
-  return (
-    <>
-      <button
-        type="button"
-        className="btn btn-outline-primary ms-auto"
-        data-bs-toggle="modal"
-        data-bs-target="#loginModal"
-      >
-        <span className="fa fa-sign-in me-1"></span> Login
-      </button>
+  const containerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh",
+  };
 
-      <div
-        className="modal fade"
-        id="loginModal"
-        tabIndex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">
-                Login
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <button className="btn btn-primary w-100 mb-4">
-                <span className="fa fa-google me-2"></span> Sign in With Google
-              </button>
-              <button className="btn btn-primary w-100 mb-4">
-                <span className="fa fa-facebook me-2"></span> Sign in With
-                Facebook
-              </button>
-              <form>
-                <div className="mb-3">
-                  <label htmlFor="exampleInputEmail1" className="form-label">
-                    Email address
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
-                  />
-                  <div id="emailHelp" className="form-text">
-                    We'll never share your email with anyone else.
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="exampleInputPassword1" className="form-label">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="exampleInputPassword1"
-                  />
-                </div>
-                <div className="mb-3 form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="exampleCheck1"
-                  />
-                  <label className="form-check-label" htmlFor="exampleCheck1">
-                    Check me out
-                  </label>
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-outline-primary w-100 mt-5"
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
-          </div>
+  const h2 = {
+    display: "flex",
+    justifyContent: "center",
+  };
+
+  const formStyle = {
+    width: "400px",
+    padding: "20px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#fff",
+  };
+
+  const labelStyle = {
+    fontSize: "16px",
+    marginBottom: "10px",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px",
+    marginBottom: "20px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+  };
+
+  const buttonStyle = {
+    backgroundColor: "green",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    padding: "10px 20px",
+    fontSize: "18px",
+    cursor: "pointer",
+  };
+
+  const buttonStyle2 = {
+    backgroundColor: "lightwhite",
+    border: "none",
+    padding: "10px 20px",
+    fontSize: "18px",
+    cursor: "pointer",
+    marginLeft: "173px",
+    textDecoration: "none", 
+  };
+    //FFIX LOGIN KNAP OG SIGN UP FARVE OG DET OK  HEJ GOD WEEKEND TIL JER ALMIN OG CHRISNTAN?! :)))
+  const p = {
+    marginLeft: "192px",
+  };
+
+  return (
+    <div>
+      <div style={containerStyle}>
+        <div style={formStyle}>
+          <h2 style={h2}>Login</h2>
+          <form action="login.php" method="post">
+            <label style={labelStyle} htmlFor="Username">
+              Username:
+            </label>
+            <input
+              style={inputStyle}
+              type="text"
+              id="Username"
+              name="Username"
+              required
+            />
+            <label style={labelStyle} htmlFor="Password">
+              Password:
+            </label>
+            <input
+              style={inputStyle}
+              type="password"
+              id="Password"
+              name="Password"
+              required
+            />
+            <button style={buttonStyle} type="submit">
+              Login
+            </button>
+            <button style={buttonStyle2}>
+              <a href="/Register">
+                Sign up
+              </a>
+            </button>
+          </form>
         </div>
       </div>
-    </>
+        <Footer />
+    </div>
   );
 };
 
