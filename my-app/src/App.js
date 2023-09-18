@@ -4,7 +4,12 @@ import Home from './component/Home';
 import Navbar from './component/Navbar';
 import Login from './component/buttons/Login';
 import Register from './component/buttons/Register';
+import Cart from './component/buttons/Cart';
+import ProductNavbar from './component/ProductNavbar';
+import About from './component/About';
+import Contact from './component/Contact';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Footer from './component/Footer';
 
 function App() {
   return (
@@ -15,7 +20,12 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
+          <Route path="/Cart" element={<Cart />} />
+          <Route path="/ProductNavbar" element={<ProductNavbar />} />
+          <Route path="/About" element={<About />} />
+          <Route path="/Contact" element={<Contact />} />
         </Routes>
+        <Footer />
       </>
     </Router>
   );

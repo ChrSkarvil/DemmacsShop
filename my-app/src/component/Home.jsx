@@ -19,7 +19,6 @@ export default function Home() {
         </div>
       </div>
       <Products/>
-      <Footer/>
     </div>
   );
 }

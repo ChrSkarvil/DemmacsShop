@@ -45,20 +45,15 @@ const Login = () => {
     padding: "10px 20px",
     fontSize: "18px",
     cursor: "pointer",
+    marginTop: "-10px",
   };
 
   const buttonStyle2 = {
-    backgroundColor: "lightwhite",
-    border: "none",
-    padding: "10px 20px",
+    backgroundColor: "transparent",
+    border: "transparent",
     fontSize: "18px",
     cursor: "pointer",
-    marginLeft: "173px",
-    textDecoration: "none", 
-  };
-    //FFIX LOGIN KNAP OG SIGN UP FARVE OG DET OK  HEJ GOD WEEKEND TIL JER ALMIN OG CHRISNTAN?! :)))
-  const p = {
-    marginLeft: "192px",
+    marginLeft: "155px",
   };
 
   return (
@@ -87,18 +82,26 @@ const Login = () => {
               name="Password"
               required
             />
+            <p
+              style={{
+                marginLeft: "192px",
+                marginBottom: "-5px",
+                marginTop: "-8px",
+                paddingTop: "3px",
+              }}
+            >
+              Don't have an account?
+            </p>
             <button style={buttonStyle} type="submit">
               Login
             </button>
+
             <button style={buttonStyle2}>
-              <a href="/Register">
-                Sign up
-              </a>
+              <a href="/Register">Sign up</a>
             </button>
           </form>
         </div>
       </div>
-        <Footer />
     </div>
   );
 };

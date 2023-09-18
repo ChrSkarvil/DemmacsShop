@@ -32,13 +32,6 @@ export default function Products() {
   const ShowProducts = () => {
     return (
       <>
-        <div className="buttons d-flex justify-content-center mb-5 pb-5">
-          <button className="btn btn-outline-dark me-2">All</button>
-          <button className="btn btn-outline-dark me-2">Phones</button>
-          <button className="btn btn-outline-dark me-2">PC's</button>
-          <button className="btn btn-outline-dark me-2">Hardware</button>
-          <button className="btn btn-outline-dark me-2">Equipment</button>
-        </div>
 
 
         <div className="row">
@@ -83,7 +76,6 @@ export default function Products() {
       </>
     );
   };
-//fix products når api er klar med billeder, pris, tekst og navn^^^^^^
  
   return (
     <div>

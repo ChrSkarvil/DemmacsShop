@@ -1,7 +1,4 @@
 import React from "react";
-// import Login from "./buttons/Login";
-// import Register from "./buttons/Register";
-// import Cart from "./buttons/Cart";
 
 
 export default function Navbar() {
@@ -9,7 +6,7 @@ export default function Navbar() {
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 shadow-sm">
         <div className="container-fluid">
-          <a className="navbar-brand fw-bold fs-4" href="#">
+          <a className="navbar-brand fw-bold fs-4" href="/">
             Demmacs
           </a>
           <button
@@ -31,17 +28,17 @@ export default function Navbar() {
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <a className="nav-link" href="/ProductNavbar">
                   Products
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <a className="nav-link" href="/About">
                   About
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <a className="nav-link" href="/Contact">
                   Contact
                 </a>
               </li>
@@ -57,7 +54,7 @@ export default function Navbar() {
               </a>
             </div>
             <div className="buttons">
-              <a href="" className="btn btn-outline-dark ms-2">
+              <a href="/cart" className="btn btn-outline-dark ms-2">
                 <i className="fa fa-shopping-cart me-1"></i> Cart (0)
               </a>
             </div>

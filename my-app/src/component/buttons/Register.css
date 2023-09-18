@@ -1,0 +1,63 @@
+/* Register.css */
+.register-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff3d;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  h1{
+    display: flex;
+    justify-content: center;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid lightblue;
+    border-radius: 5px;
+  }
+  
+  .input-group {
+    display: flex;
+  }
+  
+  .input-group select {
+    flex: 1;
+  }
+
+  
+  .btn-primary {
+    width: 100%;
+    background-color: #89c2ff;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Fjerner den der scroll feature på type=number lålålå */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  
+}
