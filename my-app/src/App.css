@@ -7,3 +7,28 @@
    background-color: blue;
  }
 
+
+ .card {
+  max-width: 95%;
+}
+
+.card-img-top {
+  max-width: 100%;
+  height: auto;
+  max-height: 250px;
+}
+
+/* Media query for screens with a maximum width of 768px (adjust as needed) */
+@media (max-width: 768px) {
+  /* Styles for smaller screens */
+  .card {
+    max-width: 60%; /* Adjust the maximum width for smaller screens */
+    margin: 0 auto; /* Center the card horizontally */
+  }
+
+  .card-img-top {
+    max-width: 80%; /* Adjust the maximum width for smaller screens */
+    height: auto;
+    max-height: 150px; /* Adjust the maximum height for smaller screens */
+  }
+}

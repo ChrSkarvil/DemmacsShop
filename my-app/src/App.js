@@ -5,7 +5,8 @@ import Navbar from './component/Navbar';
 import Login from './component/buttons/Login';
 import Register from './component/buttons/Register';
 import Cart from './component/buttons/Cart';
-import ProductNavbar from './component/ProductNavbar';
+import Products from './component/Products';
+import Product from './component/Product';
 import About from './component/About';
 import Contact from './component/Contact';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -21,7 +22,8 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
           <Route path="/Cart" element={<Cart />} />
-          <Route path="/ProductNavbar" element={<ProductNavbar />} />
+          <Route path="/Products" element={<Products />} />
+          <Route path="/Products/:id" element={<Product />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
         </Routes>
