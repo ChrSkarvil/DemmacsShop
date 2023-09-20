@@ -90,7 +90,7 @@ export default function Products() {
         </div>
 
         <div className="test d-flex justify-content-center mb-5 pb-5">
-          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+          <div className="row row-cols-1 row-cols-md-3 row-cols-lg-4">
             {filter.map((product) => {
               return (
                 <div className="col mb-4" key={product.id}>
@@ -139,7 +139,7 @@ export default function Products() {
       <div className="container my-5 py-5">
         <div className="row">
           <div className="col-12 mb-5">
-            <h1 className="display-6 fw-bolder text-center">New Products</h1>
+            <h1 className="display-6 fw-bolder text-center">Products</h1>
             <hr />
           </div>
         </div>
