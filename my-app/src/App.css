@@ -7,7 +7,6 @@
    background-color: blue;
  }
 
-
  .card {
   max-width: 95%;
 }
@@ -32,3 +31,4 @@
     max-height: 150px; /* Adjust the maximum height for smaller screens */
   }
 }
+

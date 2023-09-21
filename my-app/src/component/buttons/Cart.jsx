@@ -1,92 +1,101 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { delCart } from "../../redux/action/index";
-import { NavLink } from "react-router-dom";
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { delCart, addCart } from '../../redux/action/index';
 
 const Cart = () => {
-  const cartItems = useSelector((state) =>
-    state.addItem.filter((product) => product.qty > 0)
-  );
+  const cartItems = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
 
   const handleClose = (item) => {
     dispatch(delCart(item));
   };
 
-  const renderCartItem = (product) => {
-    return (
-      <div className="px-4 my-5 bg-light rounded-3" key={product.id}>
-        <div className="container py-4">
-          <button
-            onClick={() => handleClose(product)}
-            className="btn-close float-end"
-            aria-label="Close"
-          ></button>
-          <div className="row justify-content-center">
-            <div className="col-md-4">
-              <img
-                src={product.image}
-                alt={product.title}
-                height="200px"
-                width="180px"
-              />
-            </div>
-            <div className="col-md-4">
-              <h3>{product.title}</h3>
-              <p className="lead fw-bold">
-                {product.qty} X $ {product.price} = ${product.qty * product.price}
-              </p>
-              <button
-                className="btn btn-outline-dark me-4"
-                onClick={() => handleClose(product)}
-              >
-                <i className="fa fa-minus"></i>
-              </button>
-              <button
-                className="btn btn-outline-dark"
-                onClick={() => handleClose(product)}
-              >
-                <i className="fa fa-plus"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const handleIncreaseQuantity = (item) => {
+    dispatch(addCart(item));
   };
 
-  const emptyCart = () => {
-    return (
-      <div className="px-4 my-5 bg-light rounded-3 py-5">
-        <div className="container py-4">
-          <div className="row">
-            <h3>Your Cart is Empty</h3>
-          </div>
-        </div>
-      </div>
-    );
+  const handleDecreaseQuantity = (item) => {
+    if (item.qty > 1) {
+      dispatch(delCart(item));
+    }
   };
 
-  const checkoutButton = () => {
-    return (
-      <div className="container">
-        <div className="row">
-          <NavLink
-            to="/checkout"
-            className="btn btn-outline-primary mb-5 w-25 mx-auto"
-          >
-            Proceed To Checkout
-          </NavLink>
-        </div>
-      </div>
-    );
+  const calculateTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.qty, 0).toFixed(2);
+  };
+
+  const handlePayNow = () => {
+    // Implement the functionality for payment here
+    // This is where you would typically integrate with a payment gateway
+    alert('Payment functionality to be implemented.');
   };
 
   return (
-    <>
-      {cartItems.length === 0 ? emptyCart() : cartItems.map(renderCartItem)}
-      {cartItems.length !== 0 && checkoutButton()}
-    </>
+    <div className="container">
+      <h2>Your Cart</h2>
+      {cartItems.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <>
+          <div className="row">
+            {cartItems.map((item) => (
+              <div key={item.id} className="col-md-6 mb-3">
+                <div className="card">
+                  <div className="row g-0">
+                    <div className="col-md-4">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="img-fluid"
+                        style={{ maxWidth: '100%' }}
+                      />
+                    </div>
+                    <div className="col-md-8">
+                      <div className="card-body">
+                        <h5 className="card-title">{item.title}</h5>
+                        <p className="card-text">Price: ${item.price.toFixed(2)}</p>
+                        <div className="d-flex align-items-center">
+                          <button
+                            className="btn btn-danger me-2"
+                            onClick={() => handleClose(item)}
+                            disabled={item.qty > 1}
+                          >
+                            Remove
+                          </button>
+                          <button
+                            className="btn btn-secondary me-2"
+                            onClick={() => handleDecreaseQuantity(item)}
+                          >
+                            -
+                          </button>
+                          <span className="me-2">{item.qty}</span>
+                          <button
+                            className="btn btn-secondary me-2"
+                            onClick={() => handleIncreaseQuantity(item)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <p className="fw-bold">Total Price: ${calculateTotalPrice()}</p>
+            </div>
+            <div>
+              <button className="btn btn-success" onClick={handlePayNow}>
+                Pay Now
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 

@@ -5,6 +5,7 @@ import { addCart } from '../redux/action';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 
+
 const Product = () => {
 
     const {id} = useParams();
