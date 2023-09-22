@@ -1,9 +1,11 @@
 import React from "react";
 import Products from "./Products";
+import Footer from "./Footer";
 
 export default function Home() {
   return (
     <div className="hero">
+      <br />
       <div className="card text-bg-dark text-black border-0 mx-auto">
         <img
           src="/assets/dede.jpg"
@@ -24,6 +26,7 @@ export default function Home() {
         </div>
       </div>
       <Products />
+      <Footer />
     </div>
   );
 }

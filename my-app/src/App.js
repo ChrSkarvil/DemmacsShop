@@ -10,7 +10,7 @@ import Products from './component/Products';
 import Product from './component/Product';
 import About from './component/About';
 import Contact from './component/Contact';
-import Footer from './component/Footer';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
@@ -27,7 +27,6 @@ function App() {
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
         </Routes>
-        <Footer />
     </Router>
   );
 }

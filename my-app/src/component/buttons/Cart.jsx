@@ -26,72 +26,68 @@ const Cart = () => {
 
   const handlePayNow = () => {
     // Implement the functionality for payment here
-    // This is where you would typically integrate with a payment gateway
     alert('Payment functionality to be implemented.');
   };
 
   return (
-    <div className="container">
-      <h2>Your Cart</h2>
+    <div className="container my-4">
+      <h2 className="text-center mb-4">Your Cart</h2>
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
         <>
           <div className="row">
             {cartItems.map((item) => (
-              <div key={item.id} className="col-md-6 mb-3">
-                <div className="card">
-                  <div className="row g-0">
-                    <div className="col-md-4">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="img-fluid"
-                        style={{ maxWidth: '100%' }}
-                      />
-                    </div>
-                    <div className="col-md-8">
-                      <div className="card-body">
-                        <h5 className="card-title">{item.title}</h5>
-                        <p className="card-text">Price: ${item.price.toFixed(2)}</p>
-                        <div className="d-flex align-items-center">
-                          <button
-                            className="btn btn-danger me-2"
-                            onClick={() => handleClose(item)}
-                            disabled={item.qty > 1}
-                          >
-                            Remove
-                          </button>
-                          <button
-                            className="btn btn-secondary me-2"
-                            onClick={() => handleDecreaseQuantity(item)}
-                          >
-                            -
-                          </button>
-                          <span className="me-2">{item.qty}</span>
-                          <button
-                            className="btn btn-secondary me-2"
-                            onClick={() => handleIncreaseQuantity(item)}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
+              <div key={item.id} className="col-md-6 mb-5">
+                <div className="d-flex align-items-center mb-3">
+                  <div style={{ maxWidth: '100px' }}>
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="img-fluid"
+                      style={{ maxWidth: '100%', height: 'auto' }}
+                    />
+                  </div>
+                  <div className="ms-3">
+                    <h5 className="card-title mb-0">{item.title}</h5>
+                    <p className="card-text">Price: ${item.price.toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="card-body d-flex flex-column justify-content-between">
+                  <div>
+                    <div className="d-flex align-items-center">
+                      <button
+                        className="btn btn-danger me-2"
+                        onClick={() => handleClose(item)}
+                        disabled={item.qty > 1}
+                      >
+                        Remove
+                      </button>
+                      <button
+                        className="btn btn-secondary me-2"
+                        onClick={() => handleDecreaseQuantity(item)}
+                      >
+                        -
+                      </button>
+                      <span className="me-2">{item.qty}</span>
+                      <button
+                        className="btn btn-secondary me-2"
+                        onClick={() => handleIncreaseQuantity(item)}
+                      >
+                        +
+                      </button>
+
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <p className="fw-bold">Total Price: ${calculateTotalPrice()}</p>
-            </div>
-            <div>
-              <button className="btn btn-success" onClick={handlePayNow}>
-                Pay Now
-              </button>
-            </div>
+          <div className="text-center">
+            <p className="fw-bold fs-5">Total Price: ${calculateTotalPrice()}</p>
+            <button className="btn btn-success" onClick={handlePayNow}>
+              Pay Now
+            </button>
           </div>
         </>
       )}
