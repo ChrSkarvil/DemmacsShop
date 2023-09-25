@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios"; // Import Axios
 
 const Login = () => {
   const containerStyle = {
@@ -55,6 +56,29 @@ const Login = () => {
     marginLeft: "155px",
   };
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get("https://192.168.1.139:7001/api/Login")        
+      .then(res =>{
+        console.log(res.data);
+    })
+
+      console.log(email);
+      // Handle the response from the server
+      if (response.status === 200) {
+        console.log("Login successful");
+      } else {
+        console.log("Login failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+
 
   return (
     <div>
@@ -92,7 +116,7 @@ const Login = () => {
             >
               Don't have an account?
             </p>
-            <button style={buttonStyle} type="button" >
+            <button style={buttonStyle} type="button" onClick={handleLogin}>
               Login
             </button>
 
