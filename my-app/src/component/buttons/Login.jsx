@@ -1,5 +1,4 @@
 import React from "react";
-import Footer from "../Footer";
 
 const Login = () => {
   const containerStyle = {
@@ -56,20 +55,21 @@ const Login = () => {
     marginLeft: "155px",
   };
 
+
   return (
     <div>
       <div style={containerStyle}>
         <div style={formStyle}>
           <h2 style={h2}>Login</h2>
-          <form action="login.php" method="post">
-            <label style={labelStyle} htmlFor="Username">
-              Username:
+          <form>
+            <label style={labelStyle} htmlFor="Email">
+              Email:
             </label>
             <input
               style={inputStyle}
               type="text"
-              id="Username"
-              name="Username"
+              id="Email"
+              name="Email"
               required
             />
             <label style={labelStyle} htmlFor="Password">
@@ -84,21 +84,22 @@ const Login = () => {
             />
             <p
               style={{
-                marginLeft: "192px",
-                marginBottom: "-5px",
-                marginTop: "-8px",
-                paddingTop: "3px",
+                marginLeft: '192px',
+                marginBottom: '-5px',
+                marginTop: '-8px',
+                paddingTop: '3px',
               }}
             >
               Don't have an account?
             </p>
-            <button style={buttonStyle} type="submit">
+            <button style={buttonStyle} type="button" >
               Login
             </button>
 
             <button style={buttonStyle2}>
               <a href="/Register">Sign up</a>
             </button>
+            <div> <br /></div>
           </form>
         </div>
       </div>
