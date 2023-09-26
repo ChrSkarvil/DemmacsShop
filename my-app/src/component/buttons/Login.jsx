@@ -1,7 +1,17 @@
-import React, { useState } from "react";
-import axios from "axios"; // Import Axios
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import bcrypt from "bcryptjs";
+
+// Create a React context for storing login data
+// const AuthContext = React.createContext();
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [isLoggedIn, setLoggedIn] = useState(false); // State to track login status
+
   const containerStyle = {
     display: "flex",
     flexDirection: "column",
@@ -56,22 +66,46 @@ const Login = () => {
     marginLeft: "155px",
   };
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+
+  //Update email and password state on change
+  const handleChange = (e) => {
+    if (e.target.name === "Email") {
+      setEmail(e.target.value);
+    } else if (e.target.name === "Password") {
+      setPassword(e.target.value);
+    }
+  };
 
   const handleLogin = async () => {
     try {
-      const response = await axios.get("https://192.168.1.139:7001/api/Login")        
-      .then(res =>{
-        console.log(res.data);
-    })
+      const response = await axios.get(
+        `http://192.168.1.139:5001/api/Login/${email}`
+      );
 
-      console.log(email);
-      // Handle the response from the server
-      if (response.status === 200) {
-        console.log("Login successful");
+      const user = response.data;
+
+      if (user) {
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (passwordMatch) {
+          // Passwords match, login successful
+          // Save login data to context
+          console.log("Login Successfull");
+          const userData = { email: user.email, isLoggedIn: true }; // Set isLoggedIn to true
+          setLoggedIn(true); // Update login status
+          setEmail(user.email);
+          // // Redirect to home page
+          navigate("/", { state: { userData } });
+        } else {
+          // Passwords do not match, login failed
+          setLoginError("Invalid email or password");
+          console.log("Login Failed");
+        }
       } else {
-        console.log("Login failed");
+        // The user doesnt exist
+        setLoginError("User not found");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -94,6 +128,7 @@ const Login = () => {
               type="text"
               id="Email"
               name="Email"
+              onChange={handleChange}
               required
             />
             <label style={labelStyle} htmlFor="Password">
@@ -104,6 +139,7 @@ const Login = () => {
               type="password"
               id="Password"
               name="Password"
+              onChange={handleChange}
               required
             />
             <p
