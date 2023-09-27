@@ -1,0 +1,70 @@
+/* Styling for the card layout */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 250px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-image {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .card-content {
+    padding: 10px;
+  }
+  
+  .card-title {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  
+  .card-price {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: bold;
+    color: green;
+  }
+  
+  /* Style for buttons */
+  .update-button,
+  .delete-button {
+    padding: 5px 10px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .update-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+  }
+  
+
+  /* In your AdminPanel.css or a separate CSS file */
+.create-Product-form {
+    max-width: 400px; /* Adjust the width as needed */
+    margin: 0 auto; /* Center the form horizontally */
+  }
+  
