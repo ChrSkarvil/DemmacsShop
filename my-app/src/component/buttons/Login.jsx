@@ -2,15 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import bcrypt from "bcryptjs";
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/reducer/authSlice'; 
 
-// Create a React context for storing login data
-// const AuthContext = React.createContext();
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
-  const [isLoggedIn, setLoggedIn] = useState(false); // State to track login status
+  const [userRole, setUserRole] = useState("");
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   const containerStyle = {
     display: "flex",
@@ -66,8 +70,6 @@ const Login = () => {
     marginLeft: "155px",
   };
 
-  const navigate = useNavigate();
-
 
   //Update email and password state on change
   const handleChange = (e) => {
@@ -81,10 +83,11 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.139:5001/api/Login/${email}`
+        `http://demmacs:5001/api/Login/${email}`
       );
 
       const user = response.data;
+      console.log(user);
 
       if (user) {
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -93,10 +96,14 @@ const Login = () => {
           // Passwords match, login successful
           // Save login data to context
           console.log("Login Successfull");
-          const userData = { email: user.email, isLoggedIn: true }; // Set isLoggedIn to true
+          const userData = { email: user.email, isLoggedIn: true, userRole: user.role };
+          setUserRole(user.role);
           setLoggedIn(true); // Update login status
           setEmail(user.email);
-          // // Redirect to home page
+          console.log("role: "+ userData.userRole);
+          dispatch(login(userData)); // Dispatch the login action with user data
+
+          //Redirect to home page
           navigate("/", { state: { userData } });
         } else {
           // Passwords do not match, login failed

@@ -1,6 +1,9 @@
 import React from 'react';
+import ReactDOM from "react-dom";
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import Home from './component/Home';
 import Navbar from './component/Navbar';
 import Login from './component/buttons/Login';
@@ -12,9 +15,12 @@ import About from './component/About';
 import Contact from './component/Contact';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 function App() {
 
+
   return (
+    <Provider store={store}>
     <Router>
         <Navbar />
         <Routes>
@@ -26,8 +32,11 @@ function App() {
           <Route path="/Products/:id" element={<Product />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
+          <Route path="/Admin" element={< About/>} />¨
+          <Route path="*" element={<Home />} /> {/* Redirect to the home page for unmatched routes */}
         </Routes>
     </Router>
+    </Provider>
   );
 }
 

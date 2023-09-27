@@ -1,14 +1,30 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { useLocation } from "react-router-dom"; // Import useLocation hook
+import { useLocation } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/reducer/authSlice';
+import { useNavigate } from 'react-router-dom';
+
+
 
 export default function Navbar() {
-  const location = useLocation();
-  const userData = location.state && location.state.userData;
-  const isLoggedIn = userData && userData.isLoggedIn;
+  const currentLocation = useLocation();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const userRole = useSelector((state) => state.auth.userRole);
   const cartItems = useSelector((state) => state.handleCart);
   const totalQuantity = cartItems.reduce((total, item) => total + item.qty, 0);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  
+    //clear userdata??
+    
+    navigate('/');
+  };
 
   console.log("test"+ isLoggedIn)
 
@@ -67,11 +83,21 @@ export default function Navbar() {
                   Contact
                 </NavLink>
               </li>
+              {isLoggedIn && userRole === 'Admin' && (
+                <li className="nav-item">
+                  <NavLink
+                    className="nav-link"
+                    to="/Admin"
+                  >
+                    Admin
+                  </NavLink>
+                </li>
+              )}
             </ul>
             <div className="d-flex align-items-center">
             {isLoggedIn ? (
                 // Render the "Logout" button if isLoggedIn is true
-                <button className="btn btn-outline-dark me-2">
+                <button className="btn btn-outline-dark me-2" onClick={handleLogout}>
                   <i className="fa fa-sign-out me-1"></i> Logout
                 </button>
               ) : (

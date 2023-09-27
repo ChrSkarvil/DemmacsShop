@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import Products from "./Products";
 import Footer from "./Footer";
-import { useLocation } from "react-router-dom"; // Import useLocation hook
+import { useLocation } from "react-router-dom";
 
 export default function Home() {
   const location = useLocation();
-  // const email = location.state && location.state.email;
   const { email, isLoggedIn } = location.state || {};
   
 
