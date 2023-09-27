@@ -61,6 +61,14 @@ export default function Navbar() {
                   Contact
                 </NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  to="/Adminpanel"
+                >
+                  AdminPanel
+                </NavLink>
+              </li>
             </ul>
             <div className="d-flex align-items-center">
               <NavLink to="/Login" className="btn btn-outline-dark me-2">

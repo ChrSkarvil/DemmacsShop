@@ -10,6 +10,7 @@ import Products from './component/Products';
 import Product from './component/Product';
 import About from './component/About';
 import Contact from './component/Contact';
+import Adminpanel from './component/Adminpanel';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/Products/:id" element={<Product />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
+          <Route path="/Adminpanel" element={<Adminpanel />} />
         </Routes>
     </Router>
   );
