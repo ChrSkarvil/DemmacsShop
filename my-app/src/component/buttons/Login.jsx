@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import bcrypt from "bcryptjs";
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/reducer/authSlice'; 
+
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [userRole, setUserRole] = useState("");
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+
   const containerStyle = {
     display: "flex",
     flexDirection: "column",
@@ -56,6 +71,56 @@ const Login = () => {
   };
 
 
+  //Update email and password state on change
+  const handleChange = (e) => {
+    if (e.target.name === "Email") {
+      setEmail(e.target.value);
+    } else if (e.target.name === "Password") {
+      setPassword(e.target.value);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get(
+        `http://demmacs:5001/api/Login/${email}`
+      );
+
+      const user = response.data;
+      console.log(user);
+
+      if (user) {
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (passwordMatch) {
+          // Passwords match, login successful
+          // Save login data to context
+          console.log("Login Successfull");
+          const userData = { email: user.email, isLoggedIn: true, userRole: user.role };
+          setUserRole(user.role);
+          setLoggedIn(true); // Update login status
+          setEmail(user.email);
+          console.log("role: "+ userData.userRole);
+          dispatch(login(userData)); // Dispatch the login action with user data
+
+          //Redirect to home page
+          navigate("/", { state: { userData } });
+        } else {
+          // Passwords do not match, login failed
+          setLoginError("Invalid email or password");
+          console.log("Login Failed");
+        }
+      } else {
+        // The user doesnt exist
+        setLoginError("User not found");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+
+
   return (
     <div>
       <div style={containerStyle}>
@@ -70,6 +135,7 @@ const Login = () => {
               type="text"
               id="Email"
               name="Email"
+              onChange={handleChange}
               required
             />
             <label style={labelStyle} htmlFor="Password">
@@ -80,6 +146,7 @@ const Login = () => {
               type="password"
               id="Password"
               name="Password"
+              onChange={handleChange}
               required
             />
             <p
@@ -92,7 +159,7 @@ const Login = () => {
             >
               Don't have an account?
             </p>
-            <button style={buttonStyle} type="button" >
+            <button style={buttonStyle} type="button" onClick={handleLogin}>
               Login
             </button>
 
