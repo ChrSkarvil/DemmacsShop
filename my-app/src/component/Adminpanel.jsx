@@ -71,6 +71,12 @@ const AdminPanel = () => {
     }
   };
 
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct({ ...newProduct, [name]: value });
+  };
+
   const updateProduct = async (ProductID, updatedData) => {
     try {
       const response = await axios.put(
@@ -136,12 +142,12 @@ const AdminPanel = () => {
         <h2 className="mb-4 text-center">Products</h2>
         <div className="card-container">
           {products.map((Product) => (
-            <div className="card mb-4" key={Product.ProductID}>
+            <div className="card mb-4" style={{padding: "5px"}} key={Product.ProductID}>
               <img
-                src={Product.ProductImage}
+                src={`data:image/jpeg;base64,${Product.ProductImage}`} // Convert binary to Base64
                 alt={Product.ProductName}
                 className="card-image"
-                style={{ width: '400px', height: '300px', objectFit: 'cover' }}
+                style={{ width: '250px', height: '300px', objectFit: 'cover' }}
               />
               <div className="card-content">
                 <h3 className="card-title">{Product.ProductName}</h3>
