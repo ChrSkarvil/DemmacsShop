@@ -21,7 +21,8 @@ const Product = () => {
     useEffect(() => {
         const getProduct = async () => {
          setLoading(true);
-         const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+        //  const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+         const response = await fetch(`http://demmacs:5001/api/Product/search?productId=${id}`);
          setProduct(await response.json());
          setLoading(false);
         }
@@ -51,20 +52,20 @@ const Product = () => {
         return(
             <>
                 <div className="col-md-6">  
-                    <img src={product.image} alt={product.title} 
+                    <img src={`data:image/jpeg;base64,${product.image}`} alt={product.productName} 
                     height="400px" width="350px"/>
                 </div>
                 <div className="col-md-6">
                     <h4 className="text-uppercase text-black-50">
-                        {product.category}
+                        {product.categoryName}
                     </h4>
-                    <h1 className="display-5">{product.title}</h1>
+                    <h2 className="display-5">{product.productName}</h2>
                     <p className="lead fw-bolder">
-                        Rating {product.rating && product.rating.rate}
+                        Rating 5
                         <i className="fa fa-star"></i>
                     </p>
                     <h3 className="display-6 fw-bold my-4">
-                        $ {product.price}
+                        $ {product.productPrice}
                     </h3>
                     <p className="lead">{product.description}</p>
                     <button className='btn btn-outline-dark px-4 py-2'
