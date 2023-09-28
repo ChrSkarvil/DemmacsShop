@@ -11,7 +11,8 @@ export default function Products() {
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      const response = await fetch("https://fakestoreapi.com/products");
+      // const response = await fetch("https://fakestoreapi.com/products");
+      const response = await fetch("http://demmacs:5001/api/Product");
       if (componentMounted) {
         setdata(await response.clone().json());
         setFilter(await response.json());
@@ -47,7 +48,7 @@ export default function Products() {
   };
 
   const filterProduct = (cat) => {
-    const updatedList = data.filter((x) => x.category === cat);
+    const updatedList = data.filter((x) => x.categoryName === cat);
     setFilter(updatedList);
   };
 
@@ -64,26 +65,26 @@ export default function Products() {
 
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("men's clothing")}
+            onClick={() => filterProduct("Phone")}
           >
             Phones
           </button>
 
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("women's clothing")}
+            onClick={() => filterProduct("Pc")}
           >
             PC's
           </button>
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("jewelery")}
+            onClick={() => filterProduct("Hardware")}
           >
             Hardware
           </button>
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("electronics")}
+            onClick={() => filterProduct("Equipment")}
           >
             Equipment
           </button>
@@ -93,14 +94,14 @@ export default function Products() {
           <div className="row row-cols-1 row-cols-md-3 row-cols-lg-4">
             {filter.map((product) => {
               return (
-                <div className="col mb-4" key={product.id}>
+                <div className="col mb-4" key={product.productID}>
                   <div className="card h-100 text-center p-4">
                     <div className="d-flex flex-column h-100">
                       <div className="d-flex align-items-center">
                         <img
-                          src={product.image}
+                          src={`data:image/jpeg;base64,${product.image}`}
                           className="card-img-top"
-                          alt={product.title}
+                          alt={product.productName}
                           style={{
                             maxWidth: "100%",
                             height: "auto",
@@ -114,12 +115,12 @@ export default function Products() {
                       </div>
                       <div className="card-footer">
                         <h5 className="card-title mb-0">
-                          {product.title.substring(0, 12)}...
+                          {product.productName.substring(0, 12)}...
                         </h5>
                         <p className="card-text lead fw-bold">
-                          ${product.price}
+                          ${product.productPrice}
                         </p>
-                        <NavLink to={`/products/${product.id}`} className="btn btn-outline-dark">
+                        <NavLink to={`/products/${product.productID}`} className="btn btn-outline-dark">
                           Buy Now
                         </NavLink>
                       </div>
