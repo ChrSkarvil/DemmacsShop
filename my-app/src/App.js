@@ -12,6 +12,7 @@ import About from './component/About';
 import Contact from './component/Contact';
 import Adminpanel from './component/Adminpanel';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Userpanel from './component/Userpanel';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
           <Route path="/Adminpanel" element={<Adminpanel />} />
+          <Route path="/Userpanel" element={<Userpanel />} />
         </Routes>
     </Router>
   );

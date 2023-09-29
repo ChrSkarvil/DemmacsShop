@@ -66,7 +66,15 @@ export default function Navbar() {
                   className="nav-link"
                   to="/Adminpanel"
                 >
-                  AdminPanel
+                  Adminpanel
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  to="/Userpanel"
+                >
+                  Userpanel
                 </NavLink>
               </li>
             </ul>
