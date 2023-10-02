@@ -12,6 +12,7 @@ const Product = () => {
 
     const {id} = useParams();
     const [product, setProduct] = useState([]);
+    const [stock, setStock] = useState("");
     const [loading, setLoading] = useState(false);
 
     const dispatch = useDispatch();
@@ -27,6 +28,27 @@ const Product = () => {
          setProduct(await response.json());
          setLoading(false);
         }
+        const getStock = async () => {
+            setLoading(true);
+            try {
+              const response = await fetch(`${variables.STOCKPRODUCT_API_URL}/search?productId=${id}`);
+              
+              if (response.status === 404) {
+                // If the response status is 404 (Not Found), set stock to 0
+                setStock(0);
+              } else {
+                const stockData = await response.json();
+                // Calculate the total quantity from all stock records
+                const totalQuantity = stockData.reduce((total, stockRecord) => total + stockRecord.quantity, 0);
+                setStock(totalQuantity);
+              }
+            } catch (error) {
+              console.error('Error fetching stock:', error);
+            } finally {
+              setLoading(false);
+            }
+          };
+        getStock();
         getProduct();
     }, []);
 
@@ -68,10 +90,21 @@ const Product = () => {
                     <h3 className="display-6 fw-bold my-4">
                         $ {product.productPrice}
                     </h3>
+                    <p className="lead fw-bold">Stock: {stock}</p>
                     <p className="lead">{product.description}</p>
                     <button className='btn btn-outline-dark px-4 py-2'
-                    onClick={()=>addProduct(product)}>
-                        Add to Cart
+                      onClick={() => {
+                        if (stock > 0) {
+                          addProduct(product);
+                        } else {
+                          alert('This product is out of stock.');
+                        }
+                      }}
+                      disabled={stock <= 0} // Disable the button when stock is 0 or less
+                      
+                      //Rename the button to out of stock if there is no stock left.
+                      >
+                        {stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                     </button>
                     <NavLink to="/cart" className="btn btn-dark ms-2 px-3
                     py-2">
