@@ -87,7 +87,7 @@ export default function Navbar() {
                 <li className="nav-item">
                   <NavLink
                     className="nav-link"
-                    to="/Admin"
+                    to="/Adminpanel"
                   >
                     Admin
                   </NavLink>

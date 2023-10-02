@@ -13,10 +13,16 @@ import Products from './component/Products';
 import Product from './component/Product';
 import About from './component/About';
 import Contact from './component/Contact';
+import Adminpanel from './component/Adminpanel';
+import { useSelector } from "react-redux";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
+
+  const userRole = useSelector((state) => state.auth.userRole);
+
 
 
   return (
@@ -32,7 +38,7 @@ function App() {
           <Route path="/Products/:id" element={<Product />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
-          <Route path="/Admin" element={< About/>} />¨
+          <Route path="/Adminpanel" element={userRole != "Admin" ? <Home/> : <Adminpanel/>} />¨
           <Route path="*" element={<Home />} /> {/* Redirect to the home page for unmatched routes */}
         </Routes>
     </Router>

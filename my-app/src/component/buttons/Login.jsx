@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import bcrypt from "bcryptjs";
+import { variables } from './../../Variables'
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/reducer/authSlice'; 
 
@@ -83,7 +84,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.get(
-        `http://demmacs:5001/api/Login/${email}`
+        `${variables.LOGIN_API_URL}/${email}`
       );
 
       const user = response.data;
