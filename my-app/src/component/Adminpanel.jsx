@@ -45,7 +45,7 @@ const AdminPanel = () => {
           Weight: Product.weight,
           CategoryName: Product.categoryName,
           ManufacturerName: Product.manufacturerName,
-          ProductImage: Product.image,
+          Image: Product.image,
         }))
       );
     } catch (error) {
@@ -55,6 +55,25 @@ const AdminPanel = () => {
 
   const createProduct = async () => {
     try {
+      const formData = new FormData();
+      formData.append("ProductName", newProduct.ProductName);
+      formData.append("ProductPrice", newProduct.ProductPrice);
+      formData.append("Dimensions", newProduct.Dimensions);
+      formData.append("Weight", newProduct.Weight);
+      formData.append("Description", newProduct.Description);
+      formData.append("CategoryID", newProduct.CategoryID);
+      formData.append("ManufacturerID", newProduct.ManufacturerID);
+      formData.append("ImageFile", newProduct.ImageFile); // Append the image file
+  
+      const response = await axios.post(
+        "http://demmacs:5001/api/Product",
+        formData, // Send the FormData object
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Set the content type
+          },
+        }
+      );
       console.log("Creating product with data:", newProduct);
 
       // Parse CategoryID and ManufacturerID as integers
@@ -76,14 +95,10 @@ const AdminPanel = () => {
         Description: "",
         CategoryID: 0,
         ManufacturerID: 0,
+        Image: "",
       });
 
-      // Send the request with the parsed IDs
-      const response = await axios.post("http://demmacs:5001/api/Product", {
-        ...newProduct,
-        CategoryID: categoryId, // Use the parsed value
-        ManufacturerID: manufacturerId, // Use the parsed value
-      });
+
 
       console.log("Product created:", response.data);
 
@@ -98,9 +113,8 @@ const AdminPanel = () => {
       // Show an error alert
       alert("Error creating Product. Please check your data and try again.");
     }
-
-    
   };
+  
 
   const handleInputChange = (e, field) => {
     const { value } = e.target;
@@ -117,7 +131,7 @@ const AdminPanel = () => {
       reader.onload = (e) => {
         setNewProduct({
           ...newProduct,
-          ProductImage: e.target.result, // Set the ProductImage to the base64 data URL
+          Image: e.target.result, // Set the ProductImage to the base64 data URL
           ImageFile: file, // Store the selected image file for later upload
         });
       };
@@ -413,6 +427,19 @@ const AdminPanel = () => {
             />
           </div>
         </div>
+        <div className="col-md-6 mx-auto">
+          <div className="form-group">
+            <label htmlFor="Image">Image:</label>
+            <input
+              type="file"
+              id="Image"
+              name="Image"
+              className="form-control"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </div>
+        </div>
         <div className="row">
           <div className="col-md-6 mx-auto">
             <div className="form-group">
@@ -466,7 +493,7 @@ const AdminPanel = () => {
           {products.map((product) => (
             <div className="card mb-4" key={product.ProductID}>
               <img
-                src={`data:image/jpeg;base64,${product.ProductImage}`}
+                src={`data:image/jpeg;base64,${product.Image}`}
                 alt={product.ProductName}
                 className="card-image"
                 style={{ width: "250px", height: "300px", objectFit: "cover" }}
