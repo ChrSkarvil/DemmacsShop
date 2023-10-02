@@ -9,11 +9,16 @@ const AdminPanel = () => {
   const [editingProductId, setEditingProductId] = useState(null);
   const [manufacturerOptions, setManufacturerOptions] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [editingProductName, setEditingProductName] = useState("");
+  const [editingManufacturerID, setEditingManufacturerID] = useState(0);
+  const [editingCategoryID, setEditingCategoryID] = useState(0);
+
   const [newProduct, setNewProduct] = useState({
     ProductName: "",
     ProductPrice: 0,
     Dimensions: "",
     Weight: "",
+    Description: "",
     CategoryID: 0,
     ManufacturerID: 0,
   });
@@ -50,7 +55,7 @@ const AdminPanel = () => {
 
   const createProduct = async () => {
     try {
-      console.log("Creating product with data:", newProduct); // Add this line
+      console.log("Creating product with data:", newProduct);
 
       // Parse CategoryID and ManufacturerID as integers
       const categoryId = parseInt(newProduct.CategoryID, 10);
@@ -68,6 +73,7 @@ const AdminPanel = () => {
         ProductPrice: 0,
         Dimensions: "",
         Weight: "",
+        Description: "",
         CategoryID: 0,
         ManufacturerID: 0,
       });
@@ -92,6 +98,8 @@ const AdminPanel = () => {
       // Show an error alert
       alert("Error creating Product. Please check your data and try again.");
     }
+
+    
   };
 
   const handleInputChange = (e, field) => {
@@ -103,20 +111,25 @@ const AdminPanel = () => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
+    const file = e.target.files[0];
     if (file) {
-      // Read the selected file as a data URL
       const reader = new FileReader();
       reader.onload = (e) => {
-        setNewProduct({ ...newProduct, ProductImage: e.target.result });
+        setNewProduct({
+          ...newProduct,
+          ProductImage: e.target.result, // Set the ProductImage to the base64 data URL
+          ImageFile: file, // Store the selected image file for later upload
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
   const renderEditFields = (product) => {
+    const isEditing = editingProductId === product.ProductID;
     return (
       <div>
+        <div className={`card-content ${isEditing ? "is-extended" : ""}`}></div>
         <label>Name:</label>
         <input
           type="text"
@@ -146,12 +159,22 @@ const AdminPanel = () => {
           onChange={(e) => handleInputChange(e, "Weight")}
         />
         <div className="form-group">
+          <label>Description:</label>
+          <textarea
+            id="Description"
+            className="form-control"
+            placeholder="Product Description"
+            value={newProduct.Description}
+            onChange={(e) => handleInputChange(e, "Description")}
+          />
+        </div>
+        <div className="form-group">
           <label>Category:</label>
           <Select
             options={categoryOptions}
             value={selectedEditCategory}
             onChange={(selectedOption) =>
-              setSelectedEditCategory(selectedOption)
+              handleDropdownChange(selectedOption, "CategoryID")
             }
           />
         </div>
@@ -161,7 +184,7 @@ const AdminPanel = () => {
             options={manufacturerOptions}
             value={selectedEditManufacturer}
             onChange={(selectedOption) =>
-              setSelectedEditManufacturer(selectedOption)
+              handleDropdownChange(selectedOption, "ManufacturerID")
             }
           />
         </div>
@@ -169,30 +192,33 @@ const AdminPanel = () => {
     );
   };
 
-  const startEditing = (productId) => {
+  const startEditing = (productId, productName, manufacturerId, categoryId) => {
     setEditingProductId(productId);
+    setEditingProductName(productName); // Set the editing product name
+    setEditingManufacturerID(manufacturerId); // Set the editing manufacturer ID
+    setEditingCategoryID(categoryId); // Set the editing category ID
     // Load the current product's data into the newProduct state for editing
     const productToEdit = products.find(
       (product) => product.ProductID === productId
     );
     if (productToEdit) {
+      setEditingProductName(productToEdit.ProductName); // Set the editing product name
+      setEditingManufacturerID(productToEdit.ManufacturerID); // Set the editing manufacturer ID
+      setEditingCategoryID(productToEdit.CategoryID); // Set the editing category ID
       setNewProduct({
-        ProductName: "", // Clear the ProductName
+        ProductName: productToEdit.ProductName,
         ProductPrice: productToEdit.ProductPrice,
         Dimensions: productToEdit.Dimensions,
         Weight: productToEdit.Weight,
+        Description: productToEdit.Description,
         CategoryID: productToEdit.CategoryID,
         ManufacturerID: productToEdit.ManufacturerID,
       });
       setSelectedEditCategory(
-        categoryOptions.find(
-          (option) => option.value === productToEdit.CategoryID
-        )
+        categoryOptions.find((option) => option.value === categoryId)
       );
       setSelectedEditManufacturer(
-        manufacturerOptions.find(
-          (option) => option.value === productToEdit.ManufacturerID
-        )
+        manufacturerOptions.find((option) => option.value === manufacturerId)
       );
     }
   };
@@ -211,6 +237,7 @@ const AdminPanel = () => {
         ProductPrice: updatedData.ProductPrice,
         Dimensions: updatedData.Dimensions,
         Weight: updatedData.Weight,
+        Description: updatedData.Description, // Include the Description
       };
 
       // Check if CategoryID and ManufacturerID are valid numbers
@@ -227,6 +254,9 @@ const AdminPanel = () => {
 
       if (response.status === 200) {
         console.log("Product updated:", response.data);
+
+        // Log the updated data in the console
+        console.log("Updated Data:", updateData);
 
         // Show a success alert
         alert("Product successfully updated!");
@@ -268,7 +298,7 @@ const AdminPanel = () => {
       const manufacturerData = response.data;
       setManufacturerOptions(
         manufacturerData.map((manufacturer) => ({
-          value: manufacturer.manufacturerID,
+          value: manufacturer.manufacturerId,
           label: manufacturer.manufacturerName,
         }))
       );
@@ -297,24 +327,26 @@ const AdminPanel = () => {
       setSelectedEditCategory(selectedOption);
       setNewProduct((prevProduct) => ({
         ...prevProduct,
-        [field]: selectedOption ? selectedOption.value : null, // Store the selected ID or null
+        CategoryID: selectedOption ? selectedOption.value : 0, // Use 0 if no option is selected
       }));
+      setEditingCategoryID(selectedOption ? selectedOption.value : 0); // Update the editing category ID
     } else if (field === "ManufacturerID") {
       setSelectedEditManufacturer(selectedOption);
       setNewProduct((prevProduct) => ({
         ...prevProduct,
-        [field]: selectedOption ? selectedOption.value : null, // Store the selected ID or null
+        ManufacturerID: selectedOption ? selectedOption.value : 0, // Use 0 if no option is selected
       }));
+      setEditingManufacturerID(selectedOption ? selectedOption.value : 0); // Update the editing manufacturer ID
     }
   };
 
   return (
     <div className="admin-panel">
       <h1 className="mb-4">Admin Panel</h1>
-      <div className="create-product-form mb-4 mx-auto text-center">
+      <div className="create-product-form mx-auto text-center">
         <h2 className="mb-3">Create New Product</h2>
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6 mx-auto">
             <div className="form-group">
               <label htmlFor="ProductName">Name:</label>
               <input
@@ -322,12 +354,12 @@ const AdminPanel = () => {
                 id="ProductName"
                 className="form-control"
                 placeholder="Product Name"
-                value={newProduct.ProductName}
+                value={newProduct.productName}
                 onChange={(e) => handleInputChange(e, "ProductName")}
               />
             </div>
           </div>
-          <div className="col-md-6">
+          <div className="col-md-6 mx-auto">
             <div className="form-group">
               <label htmlFor="ProductPrice">Price $:</label>
               <input
@@ -342,7 +374,7 @@ const AdminPanel = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6 mx-auto">
             <div className="form-group">
               <label htmlFor="Dimensions">Dimensions:</label>
               <input
@@ -355,7 +387,7 @@ const AdminPanel = () => {
               />
             </div>
           </div>
-          <div className="col-md-6">
+          <div className="col-md-6 mx-auto">
             <div className="form-group">
               <label htmlFor="Weight">Weight:</label>
               <input
@@ -369,9 +401,20 @@ const AdminPanel = () => {
             </div>
           </div>
         </div>
-
+        <div className="col-md-6 mx-auto">
+          <div className="form-group">
+            <label htmlFor="Description">Description:</label>
+            <textarea
+              id="Description"
+              className="form-control"
+              placeholder="Product Description"
+              value={newProduct.Description}
+              onChange={(e) => handleInputChange(e, "Description")}
+            />
+          </div>
+        </div>
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6 mx-auto">
             <div className="form-group">
               <label htmlFor="CategoryID">Category:</label>
               <Select
@@ -380,12 +423,12 @@ const AdminPanel = () => {
                 onChange={(selectedOption) =>
                   handleDropdownChange(selectedOption, "CategoryID")
                 }
-                getOptionValue={(option) => option.value} 
+                getOptionValue={(option) => option.value}
                 inputId="CategoryID"
               />
             </div>
           </div>
-          <div className="col-md-6">
+          <div className="col-md-6 mx-auto">
             <div className="form-group">
               <label htmlFor="ManufacturerID">Manufacturer:</label>
               <Select
@@ -394,28 +437,29 @@ const AdminPanel = () => {
                 onChange={(selectedOption) =>
                   handleDropdownChange(selectedOption, "ManufacturerID")
                 }
-                getOptionValue={(option) => option.value} // Specify how to extract the value
+                getOptionValue={(option) => option.value}
                 inputId="ManufacturerID"
+                styles={{
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isSelected
+                      ? "transparent"
+                      : provided.backgroundColor,
+                    color: state.isSelected ? "black" : provided.color,
+                  }),
+                  singleValue: (provided) => ({
+                    ...provided,
+                    color: "black",
+                  }),
+                }}
               />
             </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="ProductImage">Image:</label>
-            <input
-              type="file"
-              id="ProductImage"
-              className="form-control-file"
-              accept="image/*"
-              onChange={(e) => handleImageChange(e)}
-            />
-          </div>
         </div>
-
         <button onClick={createProduct} className="btn btn-primary">
           Create Product
         </button>
       </div>
-
       <div className="product-list">
         <h2 className="mb-4 text-center">Products</h2>
         <div className="card-container">
