@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import { addCart } from '../redux/action';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
+import { variables } from './../Variables'
+
 
 
 const Product = () => {
@@ -21,8 +23,7 @@ const Product = () => {
     useEffect(() => {
         const getProduct = async () => {
          setLoading(true);
-        //  const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-         const response = await fetch(`http://demmacs:5001/api/Product/search?productId=${id}`);
+         const response = await fetch(`${variables.PRODUCT_API_URL}/search?productId=${id}`);
          setProduct(await response.json());
          setLoading(false);
         }
