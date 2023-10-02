@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Select from "react-select";
+
 import "./AdminPanel.css";
 
 const AdminPanel = () => {
   const [products, setProducts] = useState([]);
   const [editingProductId, setEditingProductId] = useState(null);
+  const [manufacturerOptions, setManufacturerOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [newProduct, setNewProduct] = useState({
     ProductName: "",
     ProductPrice: 0,
@@ -13,9 +17,14 @@ const AdminPanel = () => {
     CategoryID: 0,
     ManufacturerID: 0,
   });
+  const [selectedEditCategory, setSelectedEditCategory] = useState(null);
+  const [selectedEditManufacturer, setSelectedEditManufacturer] =
+    useState(null);
 
   useEffect(() => {
     fetchProducts();
+    fetchManufacturerOptions();
+    fetchCategoryOptions();
   }, []);
 
   const fetchProducts = async () => {
@@ -41,6 +50,8 @@ const AdminPanel = () => {
 
   const createProduct = async () => {
     try {
+      console.log("Creating product with data:", newProduct); // Add this line
+
       // Parse CategoryID and ManufacturerID as integers
       const categoryId = parseInt(newProduct.CategoryID, 10);
       const manufacturerId = parseInt(newProduct.ManufacturerID, 10);
@@ -134,20 +145,26 @@ const AdminPanel = () => {
           value={newProduct.Weight}
           onChange={(e) => handleInputChange(e, "Weight")}
         />
-        <label>Category ID:</label>
-        <input
-          type="number"
-          name="CategoryID"
-          value={newProduct.CategoryID}
-          onChange={(e) => handleInputChange(e, "CategoryID")}
-        />
-        <label>Manufacturer ID:</label>
-        <input
-          type="number"
-          name="ManufacturerID"
-          value={newProduct.ManufacturerID}
-          onChange={(e) => handleInputChange(e, "ManufacturerID")}
-        />
+        <div className="form-group">
+          <label>Category:</label>
+          <Select
+            options={categoryOptions}
+            value={selectedEditCategory}
+            onChange={(selectedOption) =>
+              setSelectedEditCategory(selectedOption)
+            }
+          />
+        </div>
+        <div className="form-group">
+          <label>Manufacturer:</label>
+          <Select
+            options={manufacturerOptions}
+            value={selectedEditManufacturer}
+            onChange={(selectedOption) =>
+              setSelectedEditManufacturer(selectedOption)
+            }
+          />
+        </div>
       </div>
     );
   };
@@ -164,9 +181,19 @@ const AdminPanel = () => {
         ProductPrice: productToEdit.ProductPrice,
         Dimensions: productToEdit.Dimensions,
         Weight: productToEdit.Weight,
-        CategoryID: 0, // Clear the CategoryID
-        ManufacturerID: 0, // Clear the ManufacturerID
+        CategoryID: productToEdit.CategoryID,
+        ManufacturerID: productToEdit.ManufacturerID,
       });
+      setSelectedEditCategory(
+        categoryOptions.find(
+          (option) => option.value === productToEdit.CategoryID
+        )
+      );
+      setSelectedEditManufacturer(
+        manufacturerOptions.find(
+          (option) => option.value === productToEdit.ManufacturerID
+        )
+      );
     }
   };
 
@@ -185,36 +212,36 @@ const AdminPanel = () => {
         Dimensions: updatedData.Dimensions,
         Weight: updatedData.Weight,
       };
-  
+
       // Check if CategoryID and ManufacturerID are valid numbers
       if (isNaN(updateData.CategoryID) || isNaN(updateData.ManufacturerID)) {
         alert("CategoryID and ManufacturerID must be valid numbers.");
         return;
       }
-  
+
       // Send the request to update the product
       const response = await axios.put(
         `http://demmacs:5001/api/Product/${productId}`,
         updateData
       );
-  
+
       if (response.status === 200) {
         console.log("Product updated:", response.data);
-  
+
         // Show a success alert
         alert("Product successfully updated!");
-  
+
         cancelEditing();
         fetchProducts();
       } else {
         console.error("Error updating Product:", response.statusText);
-  
+
         // Show an error alert
         alert("Error updating Product. Please check your data and try again.");
       }
     } catch (error) {
       console.error("Error updating Product:", error);
-  
+
       // Show an error alert
       alert("Error updating Product. Please check your data and try again.");
     }
@@ -232,6 +259,52 @@ const AdminPanel = () => {
       } catch (error) {
         console.error("Error deleting Product:", error);
       }
+    }
+  };
+
+  const fetchManufacturerOptions = async () => {
+    try {
+      const response = await axios.get("http://demmacs:5001/api/Manufacturer");
+      const manufacturerData = response.data;
+      setManufacturerOptions(
+        manufacturerData.map((manufacturer) => ({
+          value: manufacturer.manufacturerID,
+          label: manufacturer.manufacturerName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching manufacturers:", error);
+    }
+  };
+
+  const fetchCategoryOptions = async () => {
+    try {
+      const response = await axios.get("http://demmacs:5001/api/Category");
+      const categoryData = response.data;
+      setCategoryOptions(
+        categoryData.map((category) => ({
+          value: category.categoryID,
+          label: category.categoryName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleDropdownChange = (selectedOption, field) => {
+    if (field === "CategoryID") {
+      setSelectedEditCategory(selectedOption);
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
+        [field]: selectedOption ? selectedOption.value : null, // Store the selected ID or null
+      }));
+    } else if (field === "ManufacturerID") {
+      setSelectedEditManufacturer(selectedOption);
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
+        [field]: selectedOption ? selectedOption.value : null, // Store the selected ID or null
+      }));
     }
   };
 
@@ -268,7 +341,6 @@ const AdminPanel = () => {
             </div>
           </div>
         </div>
-
         <div className="row">
           <div className="col-md-6">
             <div className="form-group">
@@ -301,27 +373,29 @@ const AdminPanel = () => {
         <div className="row">
           <div className="col-md-6">
             <div className="form-group">
-              <label htmlFor="CategoryID">Category ID:</label>
-              <input
-                type="number"
-                id="CategoryID"
-                className="form-control"
-                placeholder="Category ID"
-                value={newProduct.CategoryID}
-                onChange={(e) => handleInputChange(e, "CategoryID")}
+              <label htmlFor="CategoryID">Category:</label>
+              <Select
+                options={categoryOptions}
+                value={selectedEditCategory}
+                onChange={(selectedOption) =>
+                  handleDropdownChange(selectedOption, "CategoryID")
+                }
+                getOptionValue={(option) => option.value} 
+                inputId="CategoryID"
               />
             </div>
           </div>
           <div className="col-md-6">
             <div className="form-group">
-              <label htmlFor="ManufacturerID">Manufacturer ID:</label>
-              <input
-                type="number"
-                id="ManufacturerID"
-                className="form-control"
-                placeholder="Manufacturer ID"
-                value={newProduct.ManufacturerID}
-                onChange={(e) => handleInputChange(e, "ManufacturerID")}
+              <label htmlFor="ManufacturerID">Manufacturer:</label>
+              <Select
+                options={manufacturerOptions}
+                value={selectedEditManufacturer}
+                onChange={(selectedOption) =>
+                  handleDropdownChange(selectedOption, "ManufacturerID")
+                }
+                getOptionValue={(option) => option.value} // Specify how to extract the value
+                inputId="ManufacturerID"
               />
             </div>
           </div>
@@ -346,11 +420,7 @@ const AdminPanel = () => {
         <h2 className="mb-4 text-center">Products</h2>
         <div className="card-container">
           {products.map((product) => (
-            <div
-              className="card mb-4"
-              style={{ padding: "5px" }}
-              key={product.ProductID}
-            >
+            <div className="card mb-4" key={product.ProductID}>
               <img
                 src={`data:image/jpeg;base64,${product.ProductImage}`}
                 alt={product.ProductName}
@@ -375,7 +445,7 @@ const AdminPanel = () => {
                 {editingProductId === product.ProductID ? (
                   <div>
                     <button
-                      className="btn btn-success mr-2 mb-2 mx-1"
+                      className="btn btn-success mr-2 mb-2 mx-1 update-button"
                       onClick={() =>
                         updateProduct(product.ProductID, newProduct)
                       }
@@ -383,7 +453,7 @@ const AdminPanel = () => {
                       Save
                     </button>
                     <button
-                      className="btn btn-danger mb-2"
+                      className="btn btn-danger mb-2 delete-button"
                       onClick={cancelEditing}
                     >
                       Cancel
@@ -392,13 +462,13 @@ const AdminPanel = () => {
                 ) : (
                   <div>
                     <button
-                      className="btn btn-success mr-2 mb-2 mx-1"
+                      className="btn btn-success mr-2 mb-2 mx-1 update-button"
                       onClick={() => startEditing(product.ProductID)}
                     >
                       Update
                     </button>
                     <button
-                      className="btn btn-danger mb-2"
+                      className="btn btn-danger mb-2 delete-button"
                       onClick={() => deleteProduct(product.ProductID)}
                     >
                       Delete
