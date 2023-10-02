@@ -2,13 +2,13 @@ import React from "react";
 import Footer from "../Footer";
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { variables } from './../../Variables'
 import axios from 'axios';
 import "./Register.css";
 
 const Register = () => {
   const initialValues = {CustomerFName: "", CustomerSName: "", CustomerEmail: "", Password: "", CustomerAddr: "", PostalCode: "", CustomerPhone: "", CountryID: ""};
   const [formValues, setFormValues] = useState(initialValues);
-  const [isSubmit, setIsSubmit] = useState(false);
   const [customerId, setCustomerId] = useState ("");
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const Register = () => {
       // Check if the email already exists
   try {
     const existingUserResponse = await axios.get(
-      `http://demmacs:5001/api/Login/${formValues.CustomerEmail}`
+      `${variables.LOGIN_API_URL}/${formValues.CustomerEmail}`
     );
 
     if (existingUserResponse.data) {
@@ -65,7 +65,7 @@ const Register = () => {
       };
   
       const customerResponse = await axios.post(
-        "http://demmacs:5001/api/Customer", customerData
+        variables.CUSTOMER_API_URL, customerData
       );
   
     console.log("Customer created successfully:", customerResponse.data.customerID);
@@ -87,7 +87,7 @@ const Register = () => {
       };
   
       const loginResponse = await axios.post(
-        "http://demmacs:5001/api/Login",
+        variables.LOGIN_API_URL,
         loginData
       );
   

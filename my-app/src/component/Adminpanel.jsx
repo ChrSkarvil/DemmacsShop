@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { variables } from './../Variables'
+
 import axios from "axios";
 import "./AdminPanel.css";
 
@@ -21,7 +23,7 @@ const AdminPanel = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://demmacs:5001/api/Product");
+      const response = await axios.get(variables.PRODUCT_API_URL);
       const productsData = response.data;
       setProducts(
         productsData.map((Product) => ({
@@ -43,7 +45,7 @@ const AdminPanel = () => {
   const createProduct = async () => {
     try {
       const response = await axios.post(
-        "http://demmacs:5001/api/Product",
+        variables.PRODUCT_API_URL,
         newProduct
       );
       console.log("Product created:", response.data);
@@ -80,7 +82,7 @@ const AdminPanel = () => {
   const updateProduct = async (ProductID, updatedData) => {
     try {
       const response = await axios.put(
-        `http://demmacs:5001/api/Product/${ProductID}`,
+        `${variables.PRODUCT_API_URL}/${ProductID}`,
         updatedData
       );
       console.log("Product updated:", response.data);
@@ -93,7 +95,7 @@ const AdminPanel = () => {
 
   const deleteProduct = async (ProductID) => {
     try {
-      await axios.delete(`http://demmacs:5001/api/Product/${ProductID}`);
+      await axios.delete(`${variables.PRODUCT_API_URL}/${ProductID}`);
       console.log("Product deleted:", ProductID);
 
       fetchProducts();

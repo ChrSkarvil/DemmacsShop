@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
+import { variables } from './../Variables'
+
 
 export default function Products() {
   const [data, setdata] = useState([]);
@@ -12,7 +14,7 @@ export default function Products() {
     const getProducts = async () => {
       setLoading(true);
       // const response = await fetch("https://fakestoreapi.com/products");
-      const response = await fetch("http://demmacs:5001/api/Product");
+      const response = await fetch(variables.PRODUCT_API_URL);
       if (componentMounted) {
         setdata(await response.clone().json());
         setFilter(await response.json());
