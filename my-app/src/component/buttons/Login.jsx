@@ -82,29 +82,35 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      // Display an error message if email or password is empty
+      setLoginError("Email and password are required.");
+      return;
+    }
+  
     try {
       const response = await axios.get(
         `${variables.LOGIN_API_URL}/${email}`
       );
-
+  
       const user = response.data;
       console.log(user);
-
+  
       if (user) {
         const passwordMatch = await bcrypt.compare(password, user.password);
-
+  
         if (passwordMatch) {
           // Passwords match, login successful
           // Save login data to context
-          console.log("Login Successfull");
+          console.log("Login Successfully");
           const userData = { email: user.email, isLoggedIn: true, userRole: user.role };
           setUserRole(user.role);
           setLoggedIn(true); // Update login status
           setEmail(user.email);
-          console.log("role: "+ userData.userRole);
+          console.log("Role: " + userData.userRole);
           dispatch(login(userData)); // Dispatch the login action with user data
-
-          //Redirect to home page
+  
+          // Redirect to home page
           navigate("/", { state: { userData } });
         } else {
           // Passwords do not match, login failed
@@ -112,7 +118,7 @@ const Login = () => {
           console.log("Login Failed");
         }
       } else {
-        // The user doesnt exist
+        // The user doesn't exist
         setLoginError("User not found");
       }
     } catch (error) {
@@ -163,6 +169,8 @@ const Login = () => {
             <button style={buttonStyle} type="button" onClick={handleLogin}>
               Login
             </button>
+
+            {loginError && <p style={{ color: 'red', textAlign: 'center' }}>{loginError}</p>}
 
             <button style={buttonStyle2}>
               <a href="/Register">Sign up</a>
