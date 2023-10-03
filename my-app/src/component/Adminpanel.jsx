@@ -21,6 +21,7 @@ const AdminPanel = () => {
     Description: "",
     CategoryID: 0,
     ManufacturerID: 0,
+    ImageFile: null,
   });
   const [selectedEditCategory, setSelectedEditCategory] = useState(null);
   const [selectedEditManufacturer, setSelectedEditManufacturer] =
@@ -64,15 +65,17 @@ const AdminPanel = () => {
       formData.append("CategoryID", newProduct.CategoryID);
       formData.append("ManufacturerID", newProduct.ManufacturerID);
       formData.append("ImageFile", newProduct.ImageFile); // Append the image file
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type
+        },
+      };
   
       const response = await axios.post(
         "http://demmacs:5001/api/Product",
-        formData, // Send the FormData object
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type
-          },
-        }
+        formData,
+        config // Pass the config object with headers
       );
       console.log("Creating product with data:", newProduct);
 
@@ -95,7 +98,7 @@ const AdminPanel = () => {
         Description: "",
         CategoryID: 0,
         ManufacturerID: 0,
-        Image: "",
+        Image: null,
       });
 
 
