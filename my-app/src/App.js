@@ -17,7 +17,6 @@ import Adminpanel from './component/Adminpanel';
 import { useSelector } from "react-redux";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Userpanel from './component/Userpanel';
 
 
 function App() {
@@ -39,8 +38,7 @@ function App() {
           <Route path="/Products/:id" element={<Product />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
-          <Route path="/Adminpanel" element={userRole != "Admin" ? <Home/> : <Adminpanel/>} />
-          <Route path="/Userpanel" element={<Userpanel />} />
+          <Route path="/Adminpanel" element={userRole != "Admin" ? <Home/> : <Adminpanel/>} />¨
           <Route path="*" element={<Home />} /> {/* Redirect to the home page for unmatched routes */}
         </Routes>
     </Router>
