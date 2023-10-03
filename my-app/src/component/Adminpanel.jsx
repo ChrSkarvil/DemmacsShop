@@ -2,23 +2,37 @@ import React, { useState, useEffect } from "react";
 import { variables } from './../Variables'
 
 import axios from "axios";
+import Select from "react-select";
+
 import "./AdminPanel.css";
 
 const AdminPanel = () => {
   const [products, setProducts] = useState([]);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [manufacturerOptions, setManufacturerOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [editingProductName, setEditingProductName] = useState("");
+  const [editingManufacturerID, setEditingManufacturerID] = useState(0);
+  const [editingCategoryID, setEditingCategoryID] = useState(0);
+
   const [newProduct, setNewProduct] = useState({
     ProductName: "",
-    Description: "",
     ProductPrice: 0,
     Dimensions: "",
     Weight: "",
+    Description: "",
     CategoryID: 0,
     ManufacturerID: 0,
-    Image: "",
+    ImageFile: null,
   });
+  const [selectedEditCategory, setSelectedEditCategory] = useState(null);
+  const [selectedEditManufacturer, setSelectedEditManufacturer] =
+    useState(null);
 
   useEffect(() => {
     fetchProducts();
+    fetchManufacturerOptions();
+    fetchCategoryOptions();
   }, []);
 
   const fetchProducts = async () => {
@@ -27,14 +41,14 @@ const AdminPanel = () => {
       const productsData = response.data;
       setProducts(
         productsData.map((Product) => ({
-          ProductID: Product.ProductID,
+          ProductID: Product.productID,
           ProductName: Product.productName,
           ProductPrice: Product.productPrice,
           Dimensions: Product.dimensions,
           Weight: Product.weight,
           CategoryName: Product.categoryName,
           ManufacturerName: Product.manufacturerName,
-          ProductImage: Product.image,
+          Image: Product.image,
         }))
       );
     } catch (error) {
@@ -44,23 +58,56 @@ const AdminPanel = () => {
 
   const createProduct = async () => {
     try {
+      const formData = new FormData();
+      formData.append("ProductName", newProduct.ProductName);
+      formData.append("ProductPrice", newProduct.ProductPrice);
+      formData.append("Dimensions", newProduct.Dimensions);
+      formData.append("Weight", newProduct.Weight);
+      formData.append("Description", newProduct.Description);
+      formData.append("CategoryID", newProduct.CategoryID);
+      formData.append("ManufacturerID", newProduct.ManufacturerID);
+      formData.append("ImageFile", newProduct.ImageFile); // Append the image file
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type
+        },
+      };
+  
       const response = await axios.post(
         variables.PRODUCT_API_URL,
-        newProduct
+        formData,
+        config // Pass the config object with headers
       );
-      console.log("Product created:", response.data);
+      console.log("Creating product with data:", newProduct);
 
-      // Clear the form and fetch updated products
+      // Parse CategoryID and ManufacturerID as integers
+      const categoryId = parseInt(newProduct.CategoryID, 10);
+      const manufacturerId = parseInt(newProduct.ManufacturerID, 10);
+
+      // Check if parsing is successful
+      if (isNaN(categoryId) || isNaN(manufacturerId)) {
+        alert("CategoryID and ManufacturerID must be valid numbers.");
+        return;
+      }
+
+      // Clear the create form
       setNewProduct({
         ProductName: "",
-        Description: "",
         ProductPrice: 0,
         Dimensions: "",
         Weight: "",
+        Description: "",
         CategoryID: 0,
         ManufacturerID: 0,
-        Image: "",
+        Image: null,
       });
+
+
+
+      console.log("Product created:", response.data);
+
+      // Fetch updated products
       fetchProducts();
 
       // Show a success alert
@@ -72,110 +119,439 @@ const AdminPanel = () => {
       alert("Error creating Product. Please check your data and try again.");
     }
   };
+  
 
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewProduct({ ...newProduct, [name]: value });
+  const handleInputChange = (e, field) => {
+    const { value } = e.target;
+    setNewProduct((prevProduct) => ({
+      ...prevProduct,
+      [field]: value,
+    }));
   };
 
-  const updateProduct = async (ProductID, updatedData) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewProduct({
+          ...newProduct,
+          Image: e.target.result, // Set the ProductImage to the base64 data URL
+          ImageFile: file, // Store the selected image file for later upload
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const renderEditFields = (product) => {
+    const isEditing = editingProductId === product.ProductID;
+    return (
+      <div>
+        <div className={`card-content ${isEditing ? "is-extended" : ""}`}></div>
+        <label>Name:</label>
+        <input
+          type="text"
+          name="ProductName"
+          value={newProduct.ProductName}
+          onChange={(e) => handleInputChange(e, "ProductName")}
+        />
+        <label>Price:</label>
+        <input
+          type="number"
+          name="ProductPrice"
+          value={newProduct.ProductPrice}
+          onChange={(e) => handleInputChange(e, "ProductPrice")}
+        />
+        <label>Dimensions:</label>
+        <input
+          type="text"
+          name="Dimensions"
+          value={newProduct.Dimensions}
+          onChange={(e) => handleInputChange(e, "Dimensions")}
+        />
+        <label>Weight:</label>
+        <input
+          type="text"
+          name="Weight"
+          value={newProduct.Weight}
+          onChange={(e) => handleInputChange(e, "Weight")}
+        />
+        <div className="form-group">
+          <label>Description:</label>
+          <textarea
+            id="Description"
+            className="form-control"
+            placeholder="Product Description"
+            value={newProduct.Description}
+            onChange={(e) => handleInputChange(e, "Description")}
+          />
+        </div>
+        <div className="form-group">
+          <label>Category:</label>
+          <Select
+            options={categoryOptions}
+            value={selectedEditCategory}
+            onChange={(selectedOption) =>
+              handleDropdownChange(selectedOption, "CategoryID")
+            }
+          />
+        </div>
+        <div className="form-group">
+          <label>Manufacturer:</label>
+          <Select
+            options={manufacturerOptions}
+            value={selectedEditManufacturer}
+            onChange={(selectedOption) =>
+              handleDropdownChange(selectedOption, "ManufacturerID")
+            }
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const startEditing = (productId, productName, manufacturerId, categoryId) => {
+    setEditingProductId(productId);
+    setEditingProductName(productName); // Set the editing product name
+    setEditingManufacturerID(manufacturerId); // Set the editing manufacturer ID
+    setEditingCategoryID(categoryId); // Set the editing category ID
+    // Load the current product's data into the newProduct state for editing
+    const productToEdit = products.find(
+      (product) => product.ProductID === productId
+    );
+    if (productToEdit) {
+      setEditingProductName(productToEdit.ProductName); // Set the editing product name
+      setEditingManufacturerID(productToEdit.ManufacturerID); // Set the editing manufacturer ID
+      setEditingCategoryID(productToEdit.CategoryID); // Set the editing category ID
+      setNewProduct({
+        ProductName: productToEdit.ProductName,
+        ProductPrice: productToEdit.ProductPrice,
+        Dimensions: productToEdit.Dimensions,
+        Weight: productToEdit.Weight,
+        Description: productToEdit.Description,
+        CategoryID: productToEdit.CategoryID,
+        ManufacturerID: productToEdit.ManufacturerID,
+      });
+      setSelectedEditCategory(
+        categoryOptions.find((option) => option.value === categoryId)
+      );
+      setSelectedEditManufacturer(
+        manufacturerOptions.find((option) => option.value === manufacturerId)
+      );
+    }
+  };
+
+  const cancelEditing = () => {
+    setEditingProductId(null);
+  };
+
+  const updateProduct = async (productId, updatedData) => {
     try {
+      // Create an object to hold the data you want to update
+      const updateData = {
+        CategoryID: parseInt(updatedData.CategoryID, 10), // Ensure it's a number
+        ManufacturerID: parseInt(updatedData.ManufacturerID, 10), // Ensure it's a number
+        ProductName: updatedData.ProductName, // Include the ProductName
+        ProductPrice: updatedData.ProductPrice,
+        Dimensions: updatedData.Dimensions,
+        Weight: updatedData.Weight,
+        Description: updatedData.Description, // Include the Description
+      };
+
+      // Check if CategoryID and ManufacturerID are valid numbers
+      if (isNaN(updateData.CategoryID) || isNaN(updateData.ManufacturerID)) {
+        alert("CategoryID and ManufacturerID must be valid numbers.");
+        return;
+      }
+
+      // Send the request to update the product
       const response = await axios.put(
         `${variables.PRODUCT_API_URL}/${ProductID}`,
         updatedData
       );
-      console.log("Product updated:", response.data);
 
-      fetchProducts();
+      if (response.status === 200) {
+        console.log("Product updated:", response.data);
+
+        // Log the updated data in the console
+        console.log("Updated Data:", updateData);
+
+        // Show a success alert
+        alert("Product successfully updated!");
+
+        cancelEditing();
+        fetchProducts();
+      } else {
+        console.error("Error updating Product:", response.statusText);
+
+        // Show an error alert
+        alert("Error updating Product. Please check your data and try again.");
+      }
     } catch (error) {
       console.error("Error updating Product:", error);
+
+      // Show an error alert
+      alert("Error updating Product. Please check your data and try again.");
     }
   };
 
-  const deleteProduct = async (ProductID) => {
-    try {
-      await axios.delete(`${variables.PRODUCT_API_URL}/${ProductID}`);
-      console.log("Product deleted:", ProductID);
+  const deleteProduct = async (productId) => {
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (shouldDelete) {
+      try {
+        await axios.delete(`http://demmacs:5001/api/Product/${productId}`);
+        console.log("Product deleted:", productId);
+        fetchProducts();
+      } catch (error) {
+        console.error("Error deleting Product:", error);
+      }
+    }
+  };
 
-      fetchProducts();
+  const fetchManufacturerOptions = async () => {
+    try {
+      const response = await axios.get("http://demmacs:5001/api/Manufacturer");
+      const manufacturerData = response.data;
+      setManufacturerOptions(
+        manufacturerData.map((manufacturer) => ({
+          value: manufacturer.manufacturerId,
+          label: manufacturer.manufacturerName,
+        }))
+      );
     } catch (error) {
-      console.error("Error deleting Product:", error);
+      console.error("Error fetching manufacturers:", error);
+    }
+  };
+
+
+  const fetchCategoryOptions = async () => {
+    try {
+      const response = await axios.get("http://demmacs:5001/api/Category");
+      const categoryData = response.data;
+      setCategoryOptions(
+        categoryData.map((category) => ({
+          value: category.categoryID,
+          label: category.categoryName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleDropdownChange = (selectedOption, field) => {
+    if (field === "CategoryID") {
+      setSelectedEditCategory(selectedOption);
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
+        CategoryID: selectedOption ? selectedOption.value : 0, // Use 0 if no option is selected
+      }));
+      setEditingCategoryID(selectedOption ? selectedOption.value : 0); // Update the editing category ID
+    } else if (field === "ManufacturerID") {
+      setSelectedEditManufacturer(selectedOption);
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
+        ManufacturerID: selectedOption ? selectedOption.value : 0, // Use 0 if no option is selected
+      }));
+      setEditingManufacturerID(selectedOption ? selectedOption.value : 0); // Update the editing manufacturer ID
     }
   };
 
   return (
     <div className="admin-panel">
       <h1 className="mb-4">Admin Panel</h1>
-      <div className="create-Product-form mb-4 text-center">
+      <div className="create-product-form mx-auto text-center">
         <h2 className="mb-3">Create New Product</h2>
-        <div className="form-group">
-          <label htmlFor="productName">Product Name</label>
-          <input
-            type="text"
-            id="productName"
-            className="form-control"
-            placeholder="Product Name"
-            value={newProduct.ProductName}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, ProductName: e.target.value })
-            }
-          />
+        <div className="row">
+          <div className="col-md-6 mx-auto">
+            <div className="form-group">
+              <label htmlFor="ProductName">Name:</label>
+              <input
+                type="text"
+                id="ProductName"
+                className="form-control"
+                placeholder="Product Name"
+                value={newProduct.productName}
+                onChange={(e) => handleInputChange(e, "ProductName")}
+              />
+            </div>
+          </div>
+          <div className="col-md-6 mx-auto">
+            <div className="form-group">
+              <label htmlFor="ProductPrice">Price $:</label>
+              <input
+                type="number"
+                id="ProductPrice"
+                className="form-control"
+                placeholder="Product Price"
+                value={newProduct.ProductPrice}
+                onChange={(e) => handleInputChange(e, "ProductPrice")}
+              />
+            </div>
+          </div>
         </div>
-        <div className="form-group">
-          <label htmlFor="productPrice">Product Price</label>
-          <input
-            type="number"
-            id="productPrice"
-            className="form-control"
-            placeholder="Product Price"
-            value={newProduct.ProductPrice}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, ProductPrice: e.target.value })
-            }
-          />
+        <div className="row">
+          <div className="col-md-6 mx-auto">
+            <div className="form-group">
+              <label htmlFor="Dimensions">Dimensions:</label>
+              <input
+                type="text"
+                id="Dimensions"
+                className="form-control"
+                placeholder="Dimensions"
+                value={newProduct.Dimensions}
+                onChange={(e) => handleInputChange(e, "Dimensions")}
+              />
+            </div>
+          </div>
+          <div className="col-md-6 mx-auto">
+            <div className="form-group">
+              <label htmlFor="Weight">Weight:</label>
+              <input
+                type="text"
+                id="Weight"
+                className="form-control"
+                placeholder="Weight"
+                value={newProduct.Weight}
+                onChange={(e) => handleInputChange(e, "Weight")}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="col-md-6 mx-auto">
+          <div className="form-group">
+            <label htmlFor="Description">Description:</label>
+            <textarea
+              id="Description"
+              className="form-control"
+              placeholder="Product Description"
+              value={newProduct.Description}
+              onChange={(e) => handleInputChange(e, "Description")}
+            />
+          </div>
+        </div>
+        <div className="col-md-6 mx-auto">
+          <div className="form-group">
+            <label htmlFor="Image">Image:</label>
+            <input
+              type="file"
+              id="Image"
+              name="Image"
+              className="form-control"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6 mx-auto">
+            <div className="form-group">
+              <label htmlFor="CategoryID">Category:</label>
+              <Select
+                options={categoryOptions}
+                value={selectedEditCategory}
+                onChange={(selectedOption) =>
+                  handleDropdownChange(selectedOption, "CategoryID")
+                }
+                getOptionValue={(option) => option.value}
+                inputId="CategoryID"
+              />
+            </div>
+          </div>
+          <div className="col-md-6 mx-auto">
+            <div className="form-group">
+              <label htmlFor="ManufacturerID">Manufacturer:</label>
+              <Select
+                options={manufacturerOptions}
+                value={selectedEditManufacturer}
+                onChange={(selectedOption) =>
+                  handleDropdownChange(selectedOption, "ManufacturerID")
+                }
+                getOptionValue={(option) => option.value}
+                inputId="ManufacturerID"
+                styles={{
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isSelected
+                      ? "transparent"
+                      : provided.backgroundColor,
+                    color: state.isSelected ? "black" : provided.color,
+                  }),
+                  singleValue: (provided) => ({
+                    ...provided,
+                    color: "black",
+                  }),
+                }}
+              />
+            </div>
+          </div>
         </div>
         <button onClick={createProduct} className="btn btn-primary">
           Create Product
         </button>
       </div>
-
-      <div className="Product-list">
+      <div className="product-list">
         <h2 className="mb-4 text-center">Products</h2>
         <div className="card-container">
-          {products.map((Product) => (
-            <div className="card mb-4" style={{padding: "5px"}} key={Product.ProductID}>
+          {products.map((product) => (
+            <div className="card mb-4" key={product.ProductID}>
               <img
-                src={`data:image/jpeg;base64,${Product.ProductImage}`} // Convert binary to Base64
-                alt={Product.ProductName}
+                src={`data:image/jpeg;base64,${product.Image}`}
+                alt={product.ProductName}
                 className="card-image"
-                style={{ width: '250px', height: '300px', objectFit: 'cover' }}
+                style={{ width: "250px", height: "300px", objectFit: "cover" }}
               />
               <div className="card-content">
-                <h3 className="card-title">{Product.ProductName}</h3>
-                <p className="card-price mb-2 ">$ {Product.ProductPrice}</p>
-                <p>Dimensions: {Product.Dimensions}</p>
-                <p>Weight: {Product.Weight}</p>
-                <p>Category: {Product.CategoryName}</p>
-                <p>Manufacturer: {Product.ManufacturerName}</p>
+                {editingProductId === product.ProductID ? (
+                  renderEditFields(product)
+                ) : (
+                  <div>
+                    <h3 className="card-title">{product.ProductName}</h3>
+                    <p className="card-price mb-2">$ {product.ProductPrice}</p>
+                    <p>Dimensions: {product.Dimensions}</p>
+                    <p>Weight: {product.Weight}</p>
+                    <p>Category: {product.CategoryName}</p>
+                    <p>Manufacturer: {product.ManufacturerName}</p>
+                  </div>
+                )}
               </div>
               <div className="card-actions mt-2">
-                <button
-                  className="btn btn-success mr-2 mb-2"
-                  onClick={() =>
-                    updateProduct(Product.ProductID, {
-                      ProductName: "Updated Name",
-                    })
-                  }
-                >
-                  Update
-                </button>
-                <button
-                  className="btn btn-danger mr-2 mb-2 mx-1"
-                  onClick={() => deleteProduct(Product.ProductID)}
-                >
-                  Delete
-                </button>
+                {editingProductId === product.ProductID ? (
+                  <div>
+                    <button
+                      className="btn btn-success mr-2 mb-2 mx-1 update-button"
+                      onClick={() =>
+                        updateProduct(product.ProductID, newProduct)
+                      }
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="btn btn-danger mb-2 delete-button"
+                      onClick={cancelEditing}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <button
+                      className="btn btn-success mr-2 mb-2 mx-1 update-button"
+                      onClick={() => startEditing(product.ProductID)}
+                    >
+                      Update
+                    </button>
+                    <button
+                      className="btn btn-danger mb-2 delete-button"
+                      onClick={() => deleteProduct(product.ProductID)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

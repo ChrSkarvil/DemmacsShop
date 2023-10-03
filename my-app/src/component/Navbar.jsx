@@ -92,6 +92,14 @@ export default function Navbar() {
                     Admin
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  to="/Userpanel"
+                >
+                  Userpanel
+                </NavLink>
+              </li>
               )}
             </ul>
             <div className="d-flex align-items-center">
