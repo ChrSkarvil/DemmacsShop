@@ -1,9 +1,6 @@
 import React from 'react';
-import ReactDOM from "react-dom";
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import store from './redux/store';
 import Home from './component/Home';
 import Navbar from './component/Navbar';
 import Login from './component/buttons/Login';
@@ -14,20 +11,12 @@ import Product from './component/Product';
 import About from './component/About';
 import Contact from './component/Contact';
 import Adminpanel from './component/Adminpanel';
-import { useSelector } from "react-redux";
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Userpanel from './component/Userpanel';
 
-
 function App() {
 
-  const userRole = useSelector((state) => state.auth.userRole);
-
-
-
   return (
-    <Provider store={store}>
     <Router>
         <Navbar />
         <Routes>
@@ -39,12 +28,10 @@ function App() {
           <Route path="/Products/:id" element={<Product />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
-          <Route path="/Adminpanel" element={userRole != "Admin" ? <Home/> : <Adminpanel/>} />
+          <Route path="/Adminpanel" element={<Adminpanel />} />
           <Route path="/Userpanel" element={<Userpanel />} />
-          <Route path="*" element={<Home />} /> {/* Redirect to the home page for unmatched routes */}
         </Routes>
     </Router>
-    </Provider>
   );
 }
 

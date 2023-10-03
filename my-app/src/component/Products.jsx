@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
-import { variables } from './../Variables'
-
 
 export default function Products() {
   const [data, setdata] = useState([]);
@@ -13,8 +11,7 @@ export default function Products() {
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      // const response = await fetch("https://fakestoreapi.com/products");
-      const response = await fetch(variables.PRODUCT_API_URL);
+      const response = await fetch("https://fakestoreapi.com/products");
       if (componentMounted) {
         setdata(await response.clone().json());
         setFilter(await response.json());
@@ -50,7 +47,7 @@ export default function Products() {
   };
 
   const filterProduct = (cat) => {
-    const updatedList = data.filter((x) => x.categoryName === cat);
+    const updatedList = data.filter((x) => x.category === cat);
     setFilter(updatedList);
   };
 
@@ -67,26 +64,26 @@ export default function Products() {
 
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("Phone")}
+            onClick={() => filterProduct("men's clothing")}
           >
             Phones
           </button>
 
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("Pc")}
+            onClick={() => filterProduct("women's clothing")}
           >
             PC's
           </button>
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("Hardware")}
+            onClick={() => filterProduct("jewelery")}
           >
             Hardware
           </button>
           <button
             className="btn btn-outline-dark me-2"
-            onClick={() => filterProduct("Equipment")}
+            onClick={() => filterProduct("electronics")}
           >
             Equipment
           </button>
@@ -96,14 +93,14 @@ export default function Products() {
           <div className="row row-cols-1 row-cols-md-3 row-cols-lg-4">
             {filter.map((product) => {
               return (
-                <div className="col mb-4" key={product.productID}>
+                <div className="col mb-4" key={product.id}>
                   <div className="card h-100 text-center p-4">
                     <div className="d-flex flex-column h-100">
                       <div className="d-flex align-items-center">
                         <img
-                          src={`data:image/jpeg;base64,${product.image}`}
+                          src={product.image}
                           className="card-img-top"
-                          alt={product.productName}
+                          alt={product.title}
                           style={{
                             maxWidth: "100%",
                             height: "auto",
@@ -117,12 +114,12 @@ export default function Products() {
                       </div>
                       <div className="card-footer">
                         <h5 className="card-title mb-0">
-                          {product.productName.substring(0, 12)}...
+                          {product.title.substring(0, 12)}...
                         </h5>
                         <p className="card-text lead fw-bold">
-                          ${product.productPrice}
+                          ${product.price}
                         </p>
-                        <NavLink to={`/products/${product.productID}`} className="btn btn-outline-dark">
+                        <NavLink to={`/products/${product.id}`} className="btn btn-outline-dark">
                           Buy Now
                         </NavLink>
                       </div>

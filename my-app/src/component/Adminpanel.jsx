@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { variables } from './../Variables'
-
 import axios from "axios";
 import Select from "react-select";
 
@@ -37,7 +35,7 @@ const AdminPanel = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(variables.PRODUCT_API_URL);
+      const response = await axios.get("http://demmacs:5001/api/Product");
       const productsData = response.data;
       setProducts(
         productsData.map((Product) => ({
@@ -75,7 +73,7 @@ const AdminPanel = () => {
       };
   
       const response = await axios.post(
-        variables.PRODUCT_API_URL,
+        "http://demmacs:5001/api/Product",
         formData,
         config // Pass the config object with headers
       );
@@ -267,8 +265,8 @@ const AdminPanel = () => {
 
       // Send the request to update the product
       const response = await axios.put(
-        `${variables.PRODUCT_API_URL}/${ProductID}`,
-        updatedData
+        `http://demmacs:5001/api/Product/${productId}`,
+        updateData
       );
 
       if (response.status === 200) {
@@ -325,7 +323,6 @@ const AdminPanel = () => {
       console.error("Error fetching manufacturers:", error);
     }
   };
-
 
   const fetchCategoryOptions = async () => {
     try {

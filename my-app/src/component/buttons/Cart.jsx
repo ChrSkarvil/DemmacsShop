@@ -21,7 +21,7 @@ const Cart = () => {
   };
 
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.productPrice * item.qty, 0).toFixed(2);
+    return cartItems.reduce((total, item) => total + item.price * item.qty, 0).toFixed(2);
   };
 
   const handlePayNow = () => {
@@ -42,15 +42,15 @@ const Cart = () => {
                 <div className="d-flex align-items-center mb-3">
                   <div style={{ maxWidth: '100px' }}>
                     <img
-                      src={`data:image/jpeg;base64,${item.image}`}
-                      alt={item.productName}
+                      src={item.image}
+                      alt={item.title}
                       className="img-fluid"
                       style={{ maxWidth: '100%', height: 'auto' }}
                     />
                   </div>
                   <div className="ms-3">
-                    <h5 className="card-title mb-0">{item.productName}</h5>
-                    <p className="card-text">Price: ${item.productPrice.toFixed(2)}</p>
+                    <h5 className="card-title mb-0">{item.title}</h5>
+                    <p className="card-text">Price: ${item.price.toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="card-body d-flex flex-column justify-content-between">
