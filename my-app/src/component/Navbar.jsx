@@ -93,6 +93,16 @@ export default function Navbar() {
                   </NavLink>
                 </li>
               )}
+            {isLoggedIn && userRole === 'Admin' && (
+              <li className="nav-item">
+                  <NavLink
+                    className="nav-link"
+                    to="/Userpanel"
+                  >
+                    UserPanel
+                  </NavLink>
+                </li>
+            )}
             </ul>
             <div className="d-flex align-items-center">
             {isLoggedIn ? (
