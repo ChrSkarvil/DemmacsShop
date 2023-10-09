@@ -134,8 +134,8 @@ const AdminPanel = () => {
       reader.onload = (e) => {
         setNewProduct({
           ...newProduct,
-          Image: e.target.result, // Set the ProductImage to the base64 data URL
-          ImageFile: file, // Store the selected image file for later upload
+          Image: e.target.result,
+          ImageFile: file,
         });
       };
       reader.readAsDataURL(file);
@@ -185,6 +185,19 @@ const AdminPanel = () => {
             onChange={(e) => handleInputChange(e, "Description")}
           />
         </div>
+        <div className="col-md-6 mx-auto">
+        <div className="form-group">
+          <label htmlFor="Image">Image:</label>
+          <input
+            type="file"
+            id="Image"
+            name="ImageFile"
+            className="form-control"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </div>
+      </div>
         <div className="form-group">
           <label>Category:</label>
           <Select
@@ -211,17 +224,17 @@ const AdminPanel = () => {
 
   const startEditing = (productId, productName, manufacturerId, categoryId) => {
     setEditingProductId(productId);
-    setEditingProductName(productName); // Set the editing product name
-    setEditingManufacturerID(manufacturerId); // Set the editing manufacturer ID
-    setEditingCategoryID(categoryId); // Set the editing category ID
+    setEditingProductName(productName);
+    setEditingManufacturerID(manufacturerId);
+    setEditingCategoryID(categoryId);
     // Load the current product's data into the newProduct state for editing
     const productToEdit = products.find(
       (product) => product.ProductID === productId
     );
     if (productToEdit) {
-      setEditingProductName(productToEdit.ProductName); // Set the editing product name
-      setEditingManufacturerID(productToEdit.ManufacturerID); // Set the editing manufacturer ID
-      setEditingCategoryID(productToEdit.CategoryID); // Set the editing category ID
+      setEditingProductName(productToEdit.ProductName);
+      setEditingManufacturerID(productToEdit.ManufacturerID);
+      setEditingCategoryID(productToEdit.CategoryID);
       setNewProduct({
         ProductName: productToEdit.ProductName,
         ProductPrice: productToEdit.ProductPrice,
@@ -246,15 +259,15 @@ const AdminPanel = () => {
 
   const updateProduct = async (productId, updatedData) => {
     try {
-      // Create an object to hold the data you want to update
       const updateData = {
-        CategoryID: parseInt(updatedData.CategoryID, 10), // Ensure it's a number
-        ManufacturerID: parseInt(updatedData.ManufacturerID, 10), // Ensure it's a number
-        ProductName: updatedData.ProductName, // Include the ProductName
+        CategoryID: parseInt(updatedData.CategoryID, 10),
+        ManufacturerID: parseInt(updatedData.ManufacturerID, 10),
+        ProductName: updatedData.ProductName,
         ProductPrice: updatedData.ProductPrice,
         Dimensions: updatedData.Dimensions,
         Weight: updatedData.Weight,
-        Description: updatedData.Description, // Include the Description
+        Description: updatedData.Description,
+        ImageFile: updatedData.ImageFile,
       };
 
       // Check if CategoryID and ManufacturerID are valid numbers
@@ -263,10 +276,17 @@ const AdminPanel = () => {
         return;
       }
 
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type
+        },
+      };
+
       // Send the request to update the product
       const response = await axios.put(
         `http://demmacs:5001/api/Product/${productId}`,
-        updateData
+        updateData,
+        config
       );
 
       if (response.status === 200) {
